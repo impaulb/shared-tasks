@@ -6,6 +6,7 @@ var express           = require("express"),
     expressSanitizer  = require("express-sanitizer"),
     passport          = require("passport"),
     flash             = require("connect-flash"),
+    middleware        = require("./middleware"),
     LocalStrategy     = require("passport-local"),
     List              = require("./models/list"),
     Task              = require("./models/task"),
@@ -45,11 +46,11 @@ app.use(function(req, res, next){
 //
 
 app.get("/", function(req, res){
-  res.redirect("list");
+  res.render("initial");
 });
 
-app.get("/list", function(req, res){
-  List.findById("5e9cbf721c9d4400000c4a1c", function(err, list){
+app.get("/list/:id", middleware.checkListOwnership, function(req, res){
+  List.findOne({_id: req.params.id}, function(err, list){
     if(err){
       console.log(err);
     } else {
@@ -64,13 +65,13 @@ app.get("/list", function(req, res){
   });
 });
 
-app.put("/list/add", function(req, res){
-  List.findById("5e9cbf721c9d4400000c4a1c", function(err, list){
+app.put("/list/:id/add", middleware.checkListOwnership, function(req, res){
+  List.findById(req.params.id, function(err, list){
     if(err){
       console.log(err);
     } else {
       newTask = {
-        belongsTo: list._id,
+        belongsTo: req.params.id,
         content: req.body.new
       }
       Task.create(newTask, function(err, task){
@@ -79,41 +80,41 @@ app.put("/list/add", function(req, res){
         } else {
           list.tasks.push(task);
           list.save();
-          res.redirect("/");
+          res.redirect("/list/" + req.params.id);
         }
       });
     }
   });
 });
 
-app.delete("/list/:id/delete", function(req, res){
-  List.findById("5e9cbf721c9d4400000c4a1c", function(err, list){
+app.delete("/list/:id/:commentId/delete", middleware.checkListOwnership, function(req, res){
+  List.findById(req.params.id, function(err, list){
     if(err){
       console.log(err);
     } else {
-      Task.deleteOne({_id: req.params.id}, function(err){
+      Task.deleteOne({_id: req.params.commentId}, function(err){
         if(err){
           console.log(err);
         } else {
-          res.redirect("/");
+          res.redirect("/list/" + req.params.id);
         }
       });
     }
   });
 });
 
-app.delete("/list", function(req, res){
-  List.findById("5e9cbf721c9d4400000c4a1c", function(err, list){
+app.delete("/list/:id", middleware.checkListOwnership, function(req, res){
+  List.findById(req.params.id, function(err, list){
     if(err){
       console.log(err);
     } else {
-      Task.deleteMany({belongsTo: "5e9cbf721c9d4400000c4a1c"}, function(err){
+      Task.deleteMany({belongsTo: list._id}, function(err){
         if(err){
           console.log(err);
         } else {
           list.tasks = [];
           list.save();
-          res.redirect("/");
+          res.redirect("/list/" + req.params.id);
         }
       });
     }
@@ -129,8 +130,8 @@ app.post("/signin", passport.authenticate("local", {
   failureRedirect: "/signin",
   failureFlash: true,
   successFlash: true
-}), function(req, res){
-});
+}
+));
 
 app.get("/signup", function(req, res){
   res.render("signup");
@@ -144,8 +145,16 @@ app.post("/signup", function(req, res){
       res.render("signup");
     } else {
       passport.authenticate("local")(req, res, function(){
-          req.flash("success", "You have been registered. Welcome, " + user.username + "!");
-          res.redirect("/");
+        List.create({tasks: [], ownedBy: user._id, invited: []}, function(err, list){
+          if(err){
+            console.log(err);
+          } else {
+            user["owns"] = list._id;
+            user.save();
+            req.flash("success", "You have been registered. Welcome, " + user.username + "!");
+            res.redirect("/");
+          }
+        });
       });
     }
   });

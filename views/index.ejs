@@ -20,19 +20,19 @@
           <% tasks.forEach(function(task){ %>
             <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
               <%= task.content %>
-              <form class="" action="/list/<%= task._id %>/delete?_method=DELETE" method="POST">
+              <form class="" action="/list/<%= user.owns %>/<%= task._id %>/delete?_method=DELETE" method="POST">
                 <button class="btn m-0 p-0"><span class="badge badge-danger">X</span></button>
               </form>
             </li>
           <% }); %>
-          <form action="/list/add?_method=PUT" method="POST">
+          <form action="/list/<%= user.owns %>/add?_method=PUT" method="POST">
             <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
               <input type="text" name="new" class="w-100 form-control border-0" placeholder="Enter new task..">
               <button type="submit" name="button" class="btn"><i class="fas fa-plus"></i></button>
             </li>
           </form>
         </ul>
-        <form class="mt-4" action="/list?_method=DELETE" method="POST">
+        <form class="mt-4" action="/list/<%= user.owns %>/?_method=DELETE" method="POST">
           <a href="/invite" class="btn btn-primary">Invite Others</a>
           <button type="submit" class="btn btn-danger">Reset List</button>
         </form>

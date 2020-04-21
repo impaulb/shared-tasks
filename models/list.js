@@ -6,7 +6,15 @@ var listSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "Task",
     }
-  ]
+  ],
+  ownedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  },
+  invited: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  }]
 });
 
 module.exports = mongoose.model("List", listSchema);

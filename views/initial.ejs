@@ -1,0 +1,19 @@
+<%- include("./partials/header") %>
+
+<div class="container mt-2">
+  <div class="row d-flex justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <div class="mb-4 text-center">
+        <% if(!user){ %>
+          <a href="/signin" class="btn btn-primary">Sign In</a>
+          <a href="/signup" class="btn btn-secondary">Sign Up</a>
+        <% } else { %>
+          <a href="/list/<%= user.owns %>" class="btn btn-primary">Access your list(s)</a>
+          <a href="/logout" class="btn btn-danger">Log Out</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include("./partials/footer") %>
