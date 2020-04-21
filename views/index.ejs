@@ -33,14 +33,25 @@
           </form>
         </ul>
         <form class="mt-4" action="/list/<%= user.owns %>/?_method=DELETE" method="POST">
-          <a href="/invite" class="btn btn-primary">Invite Others</a>
           <button type="submit" class="btn btn-danger">Reset List</button>
         </form>
-        <p class="mt-4 font-italic">
-        <% if(user){ %>
-          Logged in as: <%= user.username %>
-        <% } %>
-        </p>
+        <strong><p class="mt-4">Users with access:</p></strong>
+        <ul class="list-group">
+          <% users.forEach(function(access){ %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <%= access %>
+              <% if(access === user.username){ %>
+                <span class="badge"><i class="fas fa-crown"></i></span>
+              <% } %>
+            </li>
+          <% }); %>
+          <li class="list-group-item p-0 border-0">
+            <div class="input-group p-0">
+              <input type="text" class="form-control p-4" placeholder="Friend's username...">
+              <button type="submit" name="button" class="btn btn-primary ml-0">Add User</button>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   </div>

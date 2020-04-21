@@ -11,10 +11,9 @@ var listSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"
   },
-  invited: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-  }]
+  hasAccess: [
+    String
+  ]
 });
 
 module.exports = mongoose.model("List", listSchema);

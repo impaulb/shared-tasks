@@ -1,6 +1,7 @@
-var User = require("../models/user"),
-    List = require("../models/list"),
-    Task = require("../models/task");
+var User  = require("../models/user"),
+    List  = require("../models/list"),
+    Task  = require("../models/task");
+    flash = require("connect-flash");
 
 var middlewareObj = {};
 

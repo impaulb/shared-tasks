@@ -58,7 +58,7 @@ app.get("/list/:id", middleware.checkListOwnership, function(req, res){
         if(err){
           console.log(err);
         } else {
-          res.render("", {tasks: tasks});
+          res.render("", {tasks: tasks, users: list.hasAccess});
         }
       });
     }
@@ -145,7 +145,7 @@ app.post("/signup", function(req, res){
       res.render("signup");
     } else {
       passport.authenticate("local")(req, res, function(){
-        List.create({tasks: [], ownedBy: user._id, invited: []}, function(err, list){
+        List.create({tasks: [], ownedBy: user._id, hasAccess: [user.username]}, function(err, list){
           if(err){
             console.log(err);
           } else {
