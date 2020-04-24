@@ -5,7 +5,7 @@ var User  = require("../models/user"),
 
 var middlewareObj = {};
 
-// Check if user is authenticated for blog
+// Check if user is authenticated for list
 middlewareObj.checkListOwnership = function(req, res, next){
   if(req.isAuthenticated()){
     List.findOne({ownedBy: req.params.id}, function(err, list){
@@ -17,6 +17,22 @@ middlewareObj.checkListOwnership = function(req, res, next){
       }
     });
   } else {
+    req.flash("error", "You must be logged in to do that.");
+    res.redirect("/");
+  }
+}
+
+// Check if user is the correct user
+middlewareObj.checkCorrectUser = function(req, res, next){
+  if(req.isAuthenticated()){
+    if(req.params.username === req.user.username){
+      next();
+    } else {
+      req.flash("error", "You do not have access to do that.");
+      res.redirect("/");
+    }
+  } else {
+    req.flash("error", "You must be logged in to do that.");
     res.redirect("/");
   }
 }

@@ -46,7 +46,17 @@ app.use(function(req, res, next){
 //
 
 app.get("/", function(req, res){
-  res.render("initial");
+  if(req.user){
+    res.redirect("/user/" + req.user.username);
+  } else {
+    res.render("initial");
+  }
+});
+
+app.get("/user/:username", middleware.checkCorrectUser, function(req, res){
+  List.find({hasAccess: req.user.username}, function(err, lists){
+    res.render("user", {lists: lists});
+  });
 });
 
 app.get("/list/:id", middleware.checkListOwnership, function(req, res){
@@ -58,14 +68,14 @@ app.get("/list/:id", middleware.checkListOwnership, function(req, res){
         if(err){
           console.log(err);
         } else {
-          res.render("", {tasks: tasks, users: list.hasAccess});
+          res.render("", {tasks: tasks, list: list});
         }
       });
     }
   });
 });
 
-app.put("/list/:id/add", middleware.checkListOwnership, function(req, res){
+app.put("/list/:id/addTask", middleware.checkListOwnership, function(req, res){
   List.findById(req.params.id, function(err, list){
     if(err){
       console.log(err);
@@ -83,6 +93,41 @@ app.put("/list/:id/add", middleware.checkListOwnership, function(req, res){
           res.redirect("/list/" + req.params.id);
         }
       });
+    }
+  });
+});
+
+app.put("/list/:id/addUser", middleware.checkListOwnership, function(req, res){
+  List.findById(req.params.id, function(err, list){
+    if(err){
+      console.log(err);
+    } else {
+      User.findOne({username: req.body.username}, function(err, user){
+        if(err || user === null || list.hasAccess.includes(user.username)){
+          console.log(err);
+          req.flash("error", "This user does not exist or has been added already.");
+          res.redirect("/list/" + req.params.id);
+        } else {
+          list.hasAccess.push(user.username);
+          list.save();
+          user.hasAccess.push(list._id);
+          user.save();
+          res.redirect("/list/" + req.params.id);
+        }
+      });
+    }
+  });
+});
+
+app.put("/list/:id/editTitle", middleware.checkListOwnership, function(req, res){
+  List.findById(req.params.id, function(err, list){
+    if(err){
+      console.log(err);
+    } else {
+      list.title = req.body.title;
+      list.save();
+      req.flash("success", "The title has been updated to: \"" + list.title + "\"");
+      res.redirect("/list/" + req.params.id);
     }
   });
 });
@@ -145,14 +190,15 @@ app.post("/signup", function(req, res){
       res.render("signup");
     } else {
       passport.authenticate("local")(req, res, function(){
-        List.create({tasks: [], ownedBy: user._id, hasAccess: [user.username]}, function(err, list){
+        List.create({title: "My Task List", tasks: [], ownedBy: user.username, hasAccess: [user.username]}, function(err, list){
           if(err){
             console.log(err);
           } else {
             user["owns"] = list._id;
+            user.hasAccess = [list._id];
             user.save();
             req.flash("success", "You have been registered. Welcome, " + user.username + "!");
-            res.redirect("/");
+            res.redirect("/user/" + user.username);
           }
         });
       });
@@ -163,6 +209,11 @@ app.post("/signup", function(req, res){
 app.get("/logout", function(req, res){
   req.logout();
   req.flash("success", "You were successfully logged out!");
+  res.redirect("/");
+});
+
+app.get("*", function(req, res){
+  req.flash("error", "This path doesn't exist!");
   res.redirect("/");
 });
 

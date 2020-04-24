@@ -7,7 +7,11 @@ var userSchema = new mongoose.Schema({
   owns:{
     type: mongoose.Schema.Types.ObjectId,
     ref: "List"
-  }
+  },
+  hasAccess:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "List"
+  }]
 });
 
 userSchema.plugin(passportLocalMongoose);

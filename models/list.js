@@ -1,16 +1,14 @@
 var mongoose = require("mongoose");
 
 var listSchema = new mongoose.Schema({
+  title: String,
   tasks: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Task",
     }
   ],
-  ownedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-  },
+  ownedBy: String,
   hasAccess: [
     String
   ]
