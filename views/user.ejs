@@ -21,9 +21,11 @@
                     </div>
                     <div class="float-right col-xs-12 mt-2">
                       <% if(user.username === list.ownedBy){ %>
-                        <a class="btn btn-danger btn-sm float-right ml-2" href="/list/<%= list._id %>/delete">Delete</a>
+                        <form action="/list/<%= list._id %>/delete?_method=DELETE" method="POST" class="input-group p-0 mb-4">
+                          <a class="btn-primary btn-sm float-right" href="/list/<%= list._id %>">View</a>
+                          <button type="submit" name="button" class="btn-sm ml-1 btn-danger float-right ml-0">Delete</button>
+                        </form>
                       <% } %>
-                      <a class="btn btn-primary btn-sm float-right" href="/list/<%= list._id %>">View</a>
                     </div>
                   </div>
                 </div>
