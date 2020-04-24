@@ -80,19 +80,24 @@ app.put("/list/:id/addTask", middleware.checkListOwnership, function(req, res){
     if(err){
       console.log(err);
     } else {
-      newTask = {
-        belongsTo: req.params.id,
-        content: req.body.new
-      }
-      Task.create(newTask, function(err, task){
-        if(err){
-          console.log(err);
-        } else {
-          list.tasks.push(task);
-          list.save();
-          res.redirect("/list/" + req.params.id);
+      if(req.body.new.length > 0){
+        newTask = {
+          belongsTo: req.params.id,
+          content: req.body.new
         }
-      });
+        Task.create(newTask, function(err, task){
+          if(err){
+            console.log(err);
+          } else {
+            list.tasks.push(task);
+            list.save();
+            res.redirect("/list/" + req.params.id);
+          }
+        });
+      } else {
+        req.flash("error", "The task can not be blank.")
+        res.redirect("/list/" + req.params.id);
+      }
     }
   });
 });
@@ -132,12 +137,12 @@ app.put("/list/:id/editTitle", middleware.checkListOwnership, function(req, res)
   });
 });
 
-app.delete("/list/:id/:commentId/delete", middleware.checkListOwnership, function(req, res){
+app.delete("/list/:id/:taskId/delete", middleware.checkListOwnership, function(req, res){
   List.findById(req.params.id, function(err, list){
     if(err){
       console.log(err);
     } else {
-      Task.deleteOne({_id: req.params.commentId}, function(err){
+      Task.deleteOne({_id: req.params.taskId}, function(err){
         if(err){
           console.log(err);
         } else {
