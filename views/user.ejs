@@ -20,19 +20,19 @@
                       <p class="mb-0">Unfinished tasks: <%= list.tasks.length %></p>
                     </div>
                     <div class="float-right col-xs-12 mt-2">
-                      <% if(user.username === list.ownedBy){ %>
-                        <form action="/list/<%= list._id %>/delete?_method=DELETE" method="POST" class="input-group p-0 mb-4">
+                        <form action="/list/<%= list._id %>/delete?_method=DELETE" method="POST" class="input-group p-0">
                           <a class="btn-primary btn-sm float-right" href="/list/<%= list._id %>">View</a>
-                          <button type="submit" name="button" class="btn-sm ml-1 btn-danger float-right ml-0">Delete</button>
+                          <% if(user.username === list.ownedBy){ %>
+                            <button type="submit" name="button" class="btn-sm ml-1 btn-danger float-right ml-0">Delete</button>
+                          <% } %>
                         </form>
-                      <% } %>
                     </div>
                   </div>
                 </div>
               </div>
               <hr class="my-1">
           <% }); %>
-          <form action="/user/<%= user.username %>/addList" method="POST" class="input-group my-3 justify-content-center">
+          <form action="/user/<%= user.username %>/addList" method="POST" class="input-group mt-4 mb-3 justify-content-center">
             <button type="submit" class="btn btn-primary text-white mr-3" name="button">New List</button>
             <a href="/logout" class="btn btn-danger">Log Out</a>
           </form>
