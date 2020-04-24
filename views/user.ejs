@@ -1,0 +1,25 @@
+<%- include("./partials/header") %>
+
+<div class="container mt-2">
+  <div class="row d-flex justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <div class="mb-4">
+        <div class="text-center">
+          <a href="/logout" class="btn btn-danger">Log Out</a>
+        </div>
+          <ul>
+            <% lists.forEach(function(list){ %>
+                <li>
+                <% if(user.username === list.ownedBy){ %>
+                  <i class="fas fa-crown mr-2"></i>
+                <% } %>
+                <a href="/list/<%= list._id %>"><%= list.title %></a>
+                </li>
+            <% }); %>
+          </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include("./partials/footer") %>
