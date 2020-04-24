@@ -79,7 +79,7 @@ app.post("/user/:username/addList", middleware.checkCorrectUser, function(req, r
     hasAccess: [req.user.username]
   }
   createList(listData, req.user);
-  req.flash("success", "Your list has been created.");
+  req.flash("success", "Your list \"" + listData.title + "\" has been created.");
   res.redirect("/user/" + req.user.username);
 });
 
@@ -166,10 +166,13 @@ app.delete("/list/:id/:taskId/delete", middleware.checkListOwnership, function(r
     if(err){
       console.log(err);
     } else {
-      Task.deleteOne({_id: req.params.taskId}, function(err){
+      Task.findOneAndRemove({_id: req.params.taskId}, function(err){
         if(err){
           console.log(err);
         } else {
+          var taskIndex = list.tasks.indexOf(req.params.taskId);
+          list.tasks.splice(taskIndex, 1);
+          list.save();
           res.redirect("/list/" + req.params.id);
         }
       });
@@ -238,7 +241,8 @@ app.post("/authenticate", function(req, res, next){
     } else {
       passport.authenticate('local', function(err, user, info) {
         if(err){
-          console.log(err);
+          req.flash("error", "No username was given.");
+          res.redirect("/");
         }
         if (!user){
           req.flash("error", "The credentials don't match.");
