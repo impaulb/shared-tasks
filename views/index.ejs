@@ -58,6 +58,11 @@
             </li>
           <% } %>
         </ul>
+        <% if(list.ownedBy === user.username){ %>
+          <form action="/list/<%= list._id %>/delete?_method=DELETE" method="POST" class="input-group p-0 mb-4">
+            <button type="submit" name="button" class="btn btn-block btn-danger ml-0">Delete List</button>
+          </form>
+        <% } %>
       </div>
     </div>
   </div>

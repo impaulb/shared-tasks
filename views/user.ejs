@@ -17,6 +17,10 @@
                 </li>
             <% }); %>
           </ul>
+          <form action="/user/<%= user.username %>/addList" method="POST" class="input-group p-0 mt-2">
+            <input type="text" name="title" class="form-control border-0 bg-light" placeholder="List title...">
+            <button type="submit" class="btn btn-primary text-white" name="button">New List</button>
+          </form>
       </div>
     </div>
   </div>

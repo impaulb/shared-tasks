@@ -45,6 +45,18 @@ app.use(function(req, res, next){
 });
 //
 
+function createList(listData, user){
+  List.create(listData, function(err, list){
+    if(err){
+      console.log(err);
+    } else {
+      user.owns.push(list._id);
+      user.hasAccess.push(list._id);
+      user.save();
+    }
+  });
+}
+
 app.get("/", function(req, res){
   if(req.user){
     res.redirect("/user/" + req.user.username);
@@ -57,6 +69,18 @@ app.get("/user/:username", middleware.checkCorrectUser, function(req, res){
   List.find({hasAccess: req.user.username}, function(err, lists){
     res.render("user", {lists: lists});
   });
+});
+
+app.post("/user/:username/addList", middleware.checkCorrectUser, function(req, res){
+  var listData = {
+    title: "My List " + (req.user.owns.length + 1),
+    tasks: [],
+    ownedBy: req.user.username,
+    hasAccess: [req.user.username]
+  }
+  createList(listData, req.user);
+  req.flash("success", "Your list has been created.");
+  res.redirect("/user/" + req.user.username);
 });
 
 app.get("/list/:id", middleware.checkListOwnership, function(req, res){
@@ -131,7 +155,7 @@ app.put("/list/:id/editTitle", middleware.checkListOwnership, function(req, res)
     } else {
       list.title = req.body.title;
       list.save();
-      req.flash("success", "The title has been updated to: \"" + list.title + "\"");
+      req.flash("success", "The title has been updated to: \"" + list.title + "\".");
       res.redirect("/list/" + req.params.id);
     }
   });
@@ -147,6 +171,22 @@ app.delete("/list/:id/:taskId/delete", middleware.checkListOwnership, function(r
           console.log(err);
         } else {
           res.redirect("/list/" + req.params.id);
+        }
+      });
+    }
+  });
+});
+
+app.delete("/list/:id/delete", middleware.checkListOwnership, function(req, res){
+  List.findOneAndDelete({_id: req.params.id}, function(err){
+    if(err){
+      console.log(err);
+    } else {
+      Task.deleteMany({belongsTo: req.params.id}, function(err){
+        if(err){
+          console.log(err);
+        } else {
+          res.redirect("/user/" + req.user.username);
         }
       });
     }
@@ -171,42 +211,46 @@ app.delete("/list/:id", middleware.checkListOwnership, function(req, res){
   });
 });
 
-app.get("/signin", function(req, res){
-  res.render("signin");
-});
-
-app.post("/signin", passport.authenticate("local", {
-  successRedirect: "/",
-  failureRedirect: "/signin",
-  failureFlash: true,
-  successFlash: true
-}
-));
-
-app.get("/signup", function(req, res){
-  res.render("signup");
-});
-
-app.post("/signup", function(req, res){
-  User.register({username: req.body.username}, req.body.password, function(err, user){
-    if(err){
-      console.log(err);
-      req.flash("error", err.message);
-      res.render("signup");
-    } else {
-      passport.authenticate("local")(req, res, function(){
-        List.create({title: "My Task List", tasks: [], ownedBy: user.username, hasAccess: [user.username]}, function(err, list){
-          if(err){
-            console.log(err);
-          } else {
-            user["owns"] = list._id;
-            user.hasAccess = [list._id];
-            user.save();
+app.post("/authenticate", function(req, res, next){
+  var username = req.body.username;
+  var password = req.body.password;
+  User.findOne({username: username}, function(err, user){
+    if(!user){
+      User.register({username: username}, password, function(err, user){
+        if(err){
+          console.log(err);
+          req.flash("error", err.message);
+          res.redirect("/");
+        } else {
+          passport.authenticate("local")(req, res, function(){
+            var listData = {
+              title: "My List 1",
+              tasks: [],
+              ownedBy: req.user.username,
+              hasAccess: [req.user.username]
+            }
+            createList(listData, user);
             req.flash("success", "You have been registered. Welcome, " + user.username + "!");
             res.redirect("/user/" + user.username);
-          }
-        });
+          });
+        }
       });
+    } else {
+      passport.authenticate('local', function(err, user, info) {
+        if(err){
+          console.log(err);
+        }
+        if (!user){
+          req.flash("error", "The credentials don't match.");
+          res.redirect("/");
+        }
+        req.logIn(user, function(err) {
+          if(err){
+            console.log(err);
+          }
+          res.redirect('/user/' + user.username);
+        });
+      })(req, res, next);
     }
   });
 });
