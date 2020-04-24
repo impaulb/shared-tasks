@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta charset="utf-8">
     <title>Shared Tasks</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
@@ -9,17 +10,21 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
     <script src="https://kit.fontawesome.com/c5b1bbaabc.js" crossorigin="anonymous"></script>
   </head>
-  <body>
+  <body class="bg-light">
 
-    <div class="container mt-4">
-      <% if(error && error.length > 0){ %>
-        <div class="alert alert-danger" role="alert">
-          <p class="mb-0"><strong>Uh oh! </strong><%= error %></p>
+  <div class="container my-4">
+    <div class="row d-flex justify-content-center">
+      <div class="col-lg-6 col-md-8">
+          <% if(error && error.length > 0){ %>
+            <div class="bg-white rounded-right border-left border-danger shadow-sm text-center py-3 px-2">
+              <p class="mb-0"><strong>Uh oh! </strong><%= error %></p>
+            </div>
+          <% } %>
+          <% if(success && success.length > 0){ %>
+            <div class="bg-white rounded-right border-left border-success shadow-sm text-center py-3 px-2">
+              <p class="mb-0"><strong>Nice! </strong><%= success %></p>
+            </div>
+          <% } %>
         </div>
-      <% } %>
-      <% if(success && success.length > 0){ %>
-        <div class="alert alert-success" role="alert">
-          <p class="mb-0"><strong>Nice! </strong><%= success %></p>
-        </div>
-      <% } %>
+      </div>
     </div>

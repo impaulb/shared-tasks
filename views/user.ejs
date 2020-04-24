@@ -3,21 +3,38 @@
 <div class="container mt-2">
   <div class="row d-flex justify-content-center">
     <div class="col-lg-6 col-md-8">
-      <div class="mb-4">
-        <div class="text-center">
-          <a href="/logout" class="btn btn-danger">Log Out</a>
-        </div>
-          <ul>
-            <% lists.forEach(function(list){ %>
-                <li>
+      <div class="my-3 p-4 bg-white rounded-right border-left border-primary shadow-sm">
+          <h4 class="pb-3 pl-2 mt-2">Hi, <%= user.username %>!</h4>
+          <hr class="my-1">
+          <% lists.forEach(function(list){ %>
+              <div class="media pt-3 px-2">
                 <% if(user.username === list.ownedBy){ %>
-                  <i class="fas fa-crown mr-2"></i>
+                  <h3><i class="fas fa-crown mr-3 align-middle"></i></h3>
+                <% } else { %>
+                  <h3><i class="fas fa-users mr-3 align-middle"></i></h3>
                 <% } %>
-                <a href="/list/<%= list._id %>"><%= list.title %></a>
-                </li>
-            <% }); %>
-          </ul>
-      </div>
+                <div class="media-body pb-3 mb-0 small lh-125">
+                  <div class="align-items-center w-100">
+                    <div class="float-left">
+                      <h5 class="text-gray-dark mb-0"><%= list.title %></h5>
+                      <p class="mb-0">Unfinished tasks: <%= list.tasks.length %></p>
+                    </div>
+                    <div class="float-right col-xs-12 mt-2">
+                      <% if(user.username === list.ownedBy){ %>
+                        <a class="btn btn-danger btn-sm float-right ml-2" href="/list/<%= list._id %>/delete">Delete</a>
+                      <% } %>
+                      <a class="btn btn-primary btn-sm float-right" href="/list/<%= list._id %>">View</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <hr class="my-1">
+          <% }); %>
+          <form action="/user/<%= user.username %>/addList" method="POST" class="input-group my-3 justify-content-center">
+            <button type="submit" class="btn btn-primary text-white mr-3" name="button">New List</button>
+            <a href="/logout" class="btn btn-danger">Log Out</a>
+          </form>
+        </div>
     </div>
   </div>
 </div>

@@ -4,10 +4,10 @@ var passportLocalMongoose = require("passport-local-mongoose");
 var userSchema = new mongoose.Schema({
   username: String,
   password: String,
-  owns:{
+  owns:[{
     type: mongoose.Schema.Types.ObjectId,
     ref: "List"
-  },
+  }],
   hasAccess:[{
     type: mongoose.Schema.Types.ObjectId,
     ref: "List"
