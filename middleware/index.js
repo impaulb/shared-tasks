@@ -47,4 +47,17 @@ middlewareObj.isLoggedIn = function(req, res, next){
   }
 }
 
+// Create a list
+middlewareObj.createList = function(listData, user){
+  List.create(listData, function(err, list){
+    if(err){
+      console.log(err);
+    } else {
+      user.owns.push(list._id);
+      user.hasAccess.push(list._id);
+      user.save();
+    }
+  });
+}
+
 module.exports = middlewareObj;

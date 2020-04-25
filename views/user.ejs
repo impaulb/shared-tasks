@@ -3,7 +3,7 @@
 <div class="container mt-2">
   <div class="row d-flex justify-content-center">
     <div class="col-lg-6 col-md-8">
-      <div class="my-3 p-4 bg-white rounded-right border-left border-primary shadow-sm">
+      <div class="p-4 bg-white rounded-right border-left border-primary shadow-sm">
           <h4 class="pb-3 pl-2 mt-2">Hi, <%= user.username %>!</h4>
           <hr class="my-1">
           <% lists.forEach(function(list){ %>
@@ -20,7 +20,7 @@
                       <p class="mb-0">Unfinished tasks: <%= list.tasks.length %></p>
                     </div>
                     <div class="float-right col-xs-12 mt-2">
-                      <form action="/list/<%= list._id %>/delete?_method=DELETE" method="POST" class="input-group p-0 ml-3">
+                      <form action="/list/<%= list._id %>?_method=DELETE" method="POST" class="input-group p-0 ml-3">
                         <a class="btn btn-primary btn-sm float-right" href="/list/<%= list._id %>">View</a>
                         <% if(user.username === list.ownedBy){ %>
                           <button type="submit" name="button" class="btn-sm ml-1 btn-danger float-right ml-0">Delete</button>
