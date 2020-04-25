@@ -141,7 +141,29 @@ app.put("/list/:id/addUser", middleware.checkListOwnership, function(req, res){
           list.save();
           user.hasAccess.push(list._id);
           user.save();
+          req.flash("success", user.username + " has been granted access.");
           res.redirect("/list/" + req.params.id);
+        }
+      });
+    }
+  });
+});
+
+app.delete("/list/:id/removeUser", middleware.checkListOwnership, function(req, res){
+  List.findById(req.params.id, function(err, list){
+    if(err){
+      console.log(err);
+    } else {
+      User.findOne({username: req.body.user}, function(err, user){
+        if(err){
+          console.log(err);
+        } else {
+          list.hasAccess.splice(list.hasAccess.indexOf(req.body.user), 1);
+          list.save();
+          user.hasAccess.splice(user.hasAccess.indexOf(req.params.id), 1);
+          user.save();
+          req.flash("success", req.body.user + "'s access has been revoked.");
+          res.redirect("back");
         }
       });
     }
@@ -170,8 +192,7 @@ app.delete("/list/:id/:taskId/delete", middleware.checkListOwnership, function(r
         if(err){
           console.log(err);
         } else {
-          var taskIndex = list.tasks.indexOf(req.params.taskId);
-          list.tasks.splice(taskIndex, 1);
+          list.tasks.splice(list.tasks.indexOf(req.params.taskId), 1);
           list.save();
           res.redirect("/list/" + req.params.id);
         }

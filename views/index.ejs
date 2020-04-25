@@ -56,10 +56,14 @@
             <li class="list-group-item d-flex align-items-center border-0">
               <% if(list.ownedBy === access){ %>
                 <span class="badge"><i class="fas fa-crown mr-4"></i></span>
+                <%= access %>
               <% } else { %>
                 <span class="badge"><i class="fas fa-user mr-4"></i></span>
+                <form action="/list/<%= list._id %>/removeUser?_method=DELETE" method="post">
+                  <input type="hidden" name="user" value="<%= access %>">
+                  <button type="submit" class="btn p-0"><%= access %></button>
+                </form>
               <% } %>
-              <%= access %>
             </li>
           <% }); %>
           <% if(list.ownedBy === user.username){ %>
