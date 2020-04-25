@@ -21,7 +21,7 @@
                     </div>
                     <div class="float-right col-xs-12 mt-2">
                       <form action="/list/<%= list._id %>/delete?_method=DELETE" method="POST" class="input-group p-0 ml-3">
-                        <a class="btn-primary btn-sm float-right" href="/list/<%= list._id %>">View</a>
+                        <a class="btn btn-primary btn-sm float-right" href="/list/<%= list._id %>">View</a>
                         <% if(user.username === list.ownedBy){ %>
                           <button type="submit" name="button" class="btn-sm ml-1 btn-danger float-right ml-0">Delete</button>
                         <% } %>
@@ -33,7 +33,7 @@
               <hr class="my-1">
           <% }); %>
           <form action="/user/<%= user.username %>/addList" method="POST" class="input-group mt-4 mb-3 justify-content-center">
-            <button type="submit" class="btn btn-primary text-white mr-3" name="button">New List</button>
+            <button type="submit" class="btn btn-primary text-white mr-2" name="button">New List</button>
             <a href="/logout" class="btn btn-danger">Log Out</a>
           </form>
         </div>

@@ -2,65 +2,80 @@
 
 <div class="container mt-2">
   <div class="row d-flex justify-content-center">
-    <div class="col-lg-6 col-md-8 col-xs-12">
-      <div class="mb-4 text-center">
-        <% if(!user){ %>
-          <a href="/signin" class="btn btn-primary">Sign In</a>
-          <a href="/signup" class="btn btn-secondary">Sign Up</a>
-        <% } else { %>
-          <a href="/logout" class="btn btn-danger">Log Out</a>
-          <a href="/" class="btn btn-primary">Back to Lists</a>
-        <% } %>
+    <div class="col-lg-6 col-md-8">
+      <div class="my-3 p-4 bg-white rounded-right border-left border-primary shadow-sm">
+        <h4 class="pb-3 pl-2 mt-2"><%= list.title %></h4>
+        <hr class="my-1">
+          <div class="media pt-3 px-2">
+            <div class="media-body pb-3 mb-0 small lh-125">
+              <div class="align-items-center w-100">
+                <ul class="list-group list-group-flush">
+                  <% tasks.forEach(function(task){ %>
+                    <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                      <%= task.content %>
+                      <form class="" action="/list/<%= list._id %>/<%= task._id %>/delete?_method=DELETE" method="POST">
+                        <button class="btn m-0 p-0"><span class="badge badge-danger">X</span></button>
+                      </form>
+                    </li>
+                  <% }); %>
+                  <form action="/list/<%= list._id %>/addTask?_method=PUT" method="POST">
+                    <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center m-0 py-2 px-2 border-bottom">
+                      <input type="text" name="new" class="list-group-item-action w-100 form-control border-0 lh-200" placeholder="Enter new task..">
+                      <button type="submit" name="button" class="btn"><i class="fas fa-plus"></i></button>
+                    </li>
+                  </form>
+                </ul>
+              </div>
+            </div>
+          </div>
+        <form action="/list/<%= list._id %>/delete?_method=DELETE" method="POST" class="input-group mt-4 mb-3 px-3 justify-content-center">
+          <a href="/user/<%= user.username %>" class="btn btn-primary w-25 mr-1"><i class="fas fa-home"></i></a>
+          <% if(list.ownedBy === user.username){ %>
+            <a href="#" class="btn btn-warning w-25 mr-1 text-white" data-toggle="modal" data-target="#settings"><i class="fas fa-cogs"></i></a>
+            <button type="submit" class="btn btn-danger btn-block text-white w-25" name="button"><i class="fas fa-trash"></i></button>
+          <% } %>
+        </form>
       </div>
-      <div class="bg-white px-4 pt-5 pb-3">
-        <div class="d-flex justify-content-between align-items-center">
-          <input id="title-edit" type="hidden" name="" value="">
-          <h2 class="m-0 p-0"><%= list.title %></h2>
-        </div>
-        <% if(list.ownedBy === user.username){ %>
-          <form action="/list/<%= list._id %>/editTitle?_method=PUT" method="POST" class="input-group p-0 mt-2">
-            <input type="text" name="title" class="form-control border-0" pattern=".{3,}"   required title="3 characters minimum" placeholder="Edit title...">
-            <button type="submit" class="btn btn-warning text-white" name="button"><i class="fas fa-pencil-alt"></i></button>
-          </form>
-        <% } %>
-        <ul class="list-group list-group-flush mt-4">
-          <% tasks.forEach(function(task){ %>
-            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-              <%= task.content %>
-              <form class="" action="/list/<%= list._id %>/<%= task._id %>/delete?_method=DELETE" method="POST">
-                <button class="btn m-0 p-0"><span class="badge badge-danger">X</span></button>
-              </form>
-            </li>
-          <% }); %>
-          <form action="/list/<%= list._id %>/addTask?_method=PUT" method="POST">
-            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-              <input type="text" name="new" class="w-100 form-control border-0" placeholder="Enter new task..">
-              <button type="submit" name="button" class="btn"><i class="fas fa-plus"></i></button>
-            </li>
-          </form>
-        </ul>
-        <strong><p class="mt-4">Users with access:</p></strong>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="settings" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header px-4">
+        <h4 class="modal-title">List Settings</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body px-4 mb-4">
+        <p><strong>Users with access:</strong></p>
         <ul class="list-group mb-4">
           <% list.hasAccess.forEach(function(access){ %>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <%= access %>
+            <li class="list-group-item d-flex align-items-center border-0">
               <% if(list.ownedBy === access){ %>
-                <span class="badge"><i class="fas fa-crown"></i></span>
+                <span class="badge"><i class="fas fa-crown mr-4"></i></span>
+              <% } else { %>
+                <span class="badge"><i class="fas fa-user mr-4"></i></span>
               <% } %>
+              <%= access %>
             </li>
           <% }); %>
           <% if(list.ownedBy === user.username){ %>
-            <li class="list-group-item p-0 border-0">
-              <form action="/list/<%= list._id %>/addUser?_method=PUT" method="POST" class="input-group p-0">
-                <input type="text" name="username" class="form-control p-4" placeholder="Friend's username...">
-                <button type="submit" name="button" class="btn btn-primary ml-0">Add User</button>
-              </form>
-            </li>
+            <form action="/list/<%= list._id %>/addUser?_method=PUT" method="POST" class="input-group p-0 mt-4">
+              <input type="text" name="username" class="form-control p-4 rounded-0 border-primary border-top-0 border-right-0 border-bottom-0" placeholder="Friend's username...">
+              <button type="submit" name="button" class="btn btn-warning text-white ml-0 px-4"><i class="fas fa-user-plus"></i></button>
+            </form>
           <% } %>
         </ul>
+        <hr>
+        <p><strong>Title:</strong></p>
+        <h4 class="mx-4"><%= list.title %></h4>
         <% if(list.ownedBy === user.username){ %>
-          <form action="/list/<%= list._id %>/delete?_method=DELETE" method="POST" class="input-group p-0 mb-4">
-            <button type="submit" name="button" class="btn btn-block btn-danger ml-0">Delete List</button>
+          <form action="/list/<%= list._id %>/editTitle?_method=PUT" method="POST" class="input-group p-0 mt-4">
+            <input type="text" name="title" class="form-control p-4 rounded-0 border-primary border-top-0 border-right-0 border-bottom-0" placeholder="New title...">
+            <button type="submit" name="button" class="btn btn-warning text-white ml-0 px-4"><i class="fas fa-edit"></i></button>
           </form>
         <% } %>
       </div>
